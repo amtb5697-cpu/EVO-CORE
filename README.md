@@ -33,3 +33,10 @@
 - لا يوجد مزود AI أو خادم خلفي منشور حتى الآن؛ لا تعتبر الواجهة متصلة بعقل ذكي قبل إعداد الخادم.
 
 التطوير الحالي على الفرع `feature/ai-foundation` للحفاظ على `main` دون تغيير.
+
+## ربط Google Gemini (خادم اختياري)
+- يوجد Worker جاهز في `worker/index.js` لاستخدام Gemini عبر Google AI Studio.
+- إعداد النشر في `wrangler.toml`، ودليل الإعداد العربي في `CLOUDFLARE-GEMINI-SETUP.md`.
+- مفتاح Gemini يجب أن يُضاف كـ Secret باسم `GEMINI_API_KEY` في Cloudflare فقط.
+- النموذج الافتراضي `gemini-3.5-flash-lite`؛ تحقق من إتاحته وحصته المجانية في AI Studio لحسابك.
+- لم يتم نشر Worker أو إضافة مفتاح Gemini؛ يلزم تنفيذ خطوات الدليل من حسابك.

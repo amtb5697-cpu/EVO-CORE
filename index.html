@@ -13,6 +13,9 @@ main{max-width:1080px;margin:28px auto;padding:0 18px}.hero{padding:26px;border:
 input,textarea{width:100%;background:#0c1626;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--text);font:inherit;margin:7px 0 12px;outline:none}input:focus,textarea:focus{border-color:var(--accent)}textarea{min-height:100px;resize:vertical}
 button{border:0;border-radius:12px;padding:11px 15px;background:var(--accent);color:#09201e;font:inherit;font-weight:750;cursor:pointer}button.secondary{background:#243650;color:var(--text);border:1px solid #3a506c}button.danger{background:#492b37;color:#ffdce5}.actions{display:flex;gap:9px;flex-wrap:wrap}.task{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.task small{display:block;color:var(--muted);margin-top:4px}.task button{padding:7px 10px;font-size:12px}.empty{color:var(--muted);font-size:14px;padding:12px 0}.wide{grid-column:1/-1}.foot{text-align:center;color:#71849e;font-size:12px;padding:26px 0}
 .auth-wrap{min-height:78vh;display:grid;place-items:center;padding:22px}.auth{width:min(100%,440px);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 18px 60px #0005}.auth h1{margin:8px 0 5px}.auth .muted{margin:0 0 15px}.notice{background:#302b1c;border:1px solid #65562a;color:#f4dfa0;border-radius:12px;padding:11px;font-size:13px;line-height:1.7;margin:12px 0}.hidden{display:none!important}.top-actions{display:flex;align-items:center;gap:10px}
+
+.ai-chat{display:flex;flex-direction:column;gap:12px}.ai-chat-log{height:280px;overflow:auto;background:#0b1524;border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}.ai-empty{color:var(--muted);font-size:14px;text-align:center;margin:auto}.ai-message{max-width:92%;padding:10px 13px;border-radius:13px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}.ai-message p{margin:5px 0 0}.ai-message strong{font-size:12px;color:var(--accent)}.ai-message.user{align-self:flex-start;background:#1c3550}.ai-message.assistant{align-self:flex-end;background:#172b2c;border:1px solid #2b5551}.ai-chat-compose{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.ai-chat-compose textarea{min-height:76px;margin:0}.ai-chat-compose button{height:48px}.ai-config{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.ai-config input{margin:0}.ai-config button{height:46px}.ai-status{font-size:12px;color:var(--muted);line-height:1.6}.ai-hint{font-size:12px;color:#e9d59a;line-height:1.7;background:#302b1c;border:1px solid #65562a;padding:10px;border-radius:11px}
+
 </style></head>
 <body>
 <header><div class="logo">EVO <span>CORE</span></div><div class="top-actions"><div class="status" id="status">● بوابة الدخول</div><button id="logout" class="secondary hidden">تسجيل الخروج</button></div></header>
@@ -30,6 +33,27 @@ button{border:0;border-radius:12px;padding:11px 15px;background:var(--accent);co
 <div class="card"><h2>ملخص النظام</h2><p class="muted">عدد المشاريع المحفوظة على هذا الجهاز</p><div id="projectCount" style="font-size:38px;font-weight:800;color:var(--accent)">0</div><p class="muted">لا يوجد تزامن سحابي حالياً.</p><button class="secondary" id="exportData">تصدير نسخة احتياطية</button></div>
 <div class="card wide"><h2>إدارة المشاريع</h2><div id="projectList" class="empty">لا توجد مشاريع بعد.</div></div>
 <div class="card wide"><h2>واجهة عقل EVO CORE</h2><p class="muted">اكتب فكرة مشروعك للحصول على خطوات تنظيمية أولية. هذا المساعد يعمل محلياً بقواعد ثابتة، وليس نموذج ذكاء اصطناعي متصلاً.</p><textarea id="idea" placeholder="مثلاً: أريد إنشاء تطبيق لإدارة متجر..."></textarea><div class="actions"><button id="makePlan">إنشاء خطة</button><button class="secondary" id="copyPlan">نسخ الخطة</button></div><pre id="plan" style="white-space:pre-wrap;line-height:1.8;color:#c9d8ed;font-family:inherit"></pre></div>
+
+<div class="card wide ai-chat">
+  <h2>محادثة العقل الذكي</h2>
+  <p class="muted">واجهة محادثة EVO CORE. عند ربط خادم AI آمن ستُرسل الرسائل إليه، ويمكنك الآن تجهيز عنوان الخادم واختباره.</p>
+  <div class="ai-config">
+    <div><label class="muted" for="aiEndpoint">عنوان خادم الذكاء الاصطناعي (HTTPS)</label><input id="aiEndpoint" type="url" placeholder="https://your-secure-server.example/api/chat" dir="ltr"></div>
+    <button id="saveAiEndpoint" class="secondary">حفظ العنوان</button>
+  </div>
+  <div id="aiEndpointStatus" class="ai-status" aria-live="polite">العقل الذكي غير متصل بعد</div>
+  <div class="ai-hint">الأمان أولاً: لا تضع مفتاح API هنا. هذا الحقل مخصص لعنوان خادم وسيط تملكه، ويجب أن يحتفظ الخادم بالمفتاح سراً. واجهة GitHub Pages وحدها لا تشغّل خادماً خلفياً.</div>
+  <div id="aiChatLog" class="ai-chat-log" aria-live="polite"></div>
+  <div class="ai-chat-compose">
+    <textarea id="aiPrompt" placeholder="اكتب فكرتك أو سؤالك... (Enter للإرسال، Shift+Enter لسطر جديد)"></textarea>
+    <button id="aiSend">إرسال</button>
+  </div>
+  <div class="actions">
+    <button id="exportAiChat" class="secondary">تصدير المحادثة</button>
+    <button id="clearAiChat" class="danger">مسح المحادثة</button>
+  </div>
+</div>
+
 <div class="card wide"><h2>حالة التطوير</h2><p class="muted">✓ واجهة الموقع الأساسية<br>✓ بوابة دخول تجريبية محلية<br>✓ لوحة إدارة المشاريع<br>○ حسابات آمنة وقاعدة بيانات سحابية<br>○ ربط نموذج ذكاء اصطناعي حقيقي<br>○ تطبيق أندرويد</p></div>
 </section><div class="foot">EVO CORE • الإصدار 0.2 التجريبي</div></main>
 <script>
@@ -51,4 +75,4 @@ $('makePlan').onclick=()=>{const idea=$('idea').value.trim();if(!idea){alert('ا
 $('copyPlan').onclick=async()=>{if(!latestPlan){alert('أنشئ الخطة أولاً');return}try{await navigator.clipboard.writeText(latestPlan);alert('تم نسخ الخطة')}catch(e){alert('تعذر النسخ؛ يمكنك تحديد النص ونسخه')}};
 if(sessionStorage.getItem(SESSION)==='yes'&&localStorage.getItem(AUTH)){showApp()}else{showAuth()}
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-</script></body></html>
+</script><script src="ai-core.js" defer></script></body></html>

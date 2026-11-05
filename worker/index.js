@@ -33,7 +33,8 @@ export default {
     const allowedOrigin = env.ALLOWED_ORIGIN || "";
 
     if (!allowedOrigin) return json({ error: "Worker setup incomplete: ALLOWED_ORIGIN is missing." }, 503, origin);
-    if (origin !== allowedOrigin && request.method !== "OPTIONS") return json({ error: "Origin not allowed." }, 403, allowedOrigin);
+    if (origin && origin !== allowedOrigin) return json({ error: "Origin not allowed." }, 403, allowedOrigin);
+    if (request.method === "POST" && origin !== allowedOrigin) return json({ error: "A valid site Origin header is required." }, 403, allowedOrigin);
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(allowedOrigin) });

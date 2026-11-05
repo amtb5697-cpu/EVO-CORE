@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="EVO CORE - لوحة التحكم الذكية لإدارة أفكارك ومشاريعك">
+<link rel="manifest" href="manifest.json">
+<title>EVO CORE | لوحة التحكم</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#131f32;--line:#26364d;--text:#edf4ff;--muted:#9db0c9;--accent:#65d6c4;--blue:#78a9ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0%,#18304a 0,transparent 35%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+header{padding:22px max(18px,calc((100% - 1050px)/2));display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);background:#0b1220cc;position:sticky;top:0;backdrop-filter:blur(12px);z-index:2}
+.logo{font-size:23px;font-weight:850;letter-spacing:1px}.logo span{color:var(--accent)}.status{font-size:12px;color:var(--accent);border:1px solid #2c716b;border-radius:30px;padding:7px 11px}
+main{max-width:1050px;margin:30px auto;padding:0 18px}.hero{padding:28px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(120deg,#172a40,#111b2c);margin-bottom:20px}.eyebrow{color:var(--accent);font-size:13px}.hero h1{font-size:clamp(26px,5vw,40px);margin:10px 0}.hero p{color:var(--muted);line-height:1.8;margin:0;max-width:700px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}.card h2{font-size:18px;margin:0 0 14px}.muted{color:var(--muted);font-size:14px;line-height:1.7}
+input,textarea{width:100%;background:#0c1626;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--text);font:inherit;margin:7px 0 12px;outline:none}input:focus,textarea:focus{border-color:var(--accent)}textarea{min-height:105px;resize:vertical}
+button{border:0;border-radius:12px;padding:11px 15px;background:var(--accent);color:#09201e;font:inherit;font-weight:750;cursor:pointer}button.secondary{background:#243650;color:var(--text);border:1px solid #3a506c}button.danger{background:#492b37;color:#ffdce5}.actions{display:flex;gap:9px;flex-wrap:wrap}.task{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.task small{display:block;color:var(--muted);margin-top:4px}.task button{padding:7px 10px;font-size:12px}.empty{color:var(--muted);font-size:14px;padding:12px 0}.wide{grid-column:1/-1}.foot{text-align:center;color:#71849e;font-size:12px;padding:28px 0}
+</style>
+</head>
+<body>
+<header><div class="logo">EVO <span>CORE</span></div><div class="status">● النظام الأولي يعمل</div></header>
+<main>
+<section class="hero"><div class="eyebrow">مساحة الإدارة والتحكم</div><h1>مرحباً بك في EVO CORE</h1><p>لوحة أولية لإدارة أفكارك ومهام بناء التطبيقات. أضف مشاريعك، تابع خطواتها، واحفظ بياناتك على هذا الجهاز. هذه النسخة لا تتصل بعد بخدمة ذكاء اصطناعي خارجية.</p></section>
+<section class="grid">
+<div class="card"><h2>إضافة مشروع</h2><label for="projectName" class="muted">اسم المشروع</label><input id="projectName" placeholder="مثال: تطبيق المتجر"><label for="projectDesc" class="muted">وصف مختصر</label><textarea id="projectDesc" placeholder="ما الذي تريد بناءه؟"></textarea><button id="addProject">إضافة المشروع</button></div>
+<div class="card"><h2>ملخص المساحة</h2><p class="muted">عدد المشاريع المحفوظة</p><div id="projectCount" style="font-size:38px;font-weight:800;color:var(--accent)">0</div><p class="muted">تُحفظ البيانات محلياً في متصفح هذا الجهاز.</p><div class="actions"><button class="secondary" id="exportData">تصدير نسخة احتياطية</button></div></div>
+<div class="card wide"><h2>مشاريعك</h2><div id="projectList" class="empty">لا توجد مشاريع بعد. أضف أول مشروع من النموذج.</div></div>
+<div class="card wide"><h2>مساعد التخطيط</h2><p class="muted">اكتب فكرة التطبيق لتحصل على خطة بداية منظمة قابلة للنسخ. لا يتم إرسال النص إلى أي خادم.</p><textarea id="idea" placeholder="اكتب فكرتك هنا..."></textarea><div class="actions"><button id="makePlan">إنشاء خطة أولية</button><button class="secondary" id="copyPlan">نسخ الخطة</button></div><pre id="plan" style="white-space:pre-wrap;line-height:1.8;color:#c9d8ed;font-family:inherit"></pre></div>
+</section><div class="foot">EVO CORE • الإصدار الأولي 0.1 • تطوير تدريجي</div>
+</main>
+<script>
+const KEY='evo-core-projects-v1';let projects=[];let latestPlan='';
+try{projects=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){projects=[]}
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem(KEY,JSON.stringify(projects));render()}
+function render(){$('projectCount').textContent=projects.length;const box=$('projectList');if(!projects.length){box.className='empty';box.textContent='لا توجد مشاريع بعد. أضف أول مشروع من النموذج.';return}box.className='';box.innerHTML='';projects.forEach((p,i)=>{const row=document.createElement('div');row.className='task';const info=document.createElement('div');const title=document.createElement('strong');title.textContent=p.name;const desc=document.createElement('small');desc.textContent=p.desc||'لا يوجد وصف';info.append(title,desc);const del=document.createElement('button');del.className='danger';del.textContent='حذف';del.onclick=()=>{projects.splice(i,1);save()};row.append(info,del);box.append(row)})}
+$('addProject').onclick=()=>{const name=$('projectName').value.trim();if(!name){alert('اكتب اسم المشروع أولاً');return}projects.push({name,desc:$('projectDesc').value.trim(),created:new Date().toISOString()});$('projectName').value='';$('projectDesc').value='';save()};
+$('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({app:'EVO CORE',projects},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='evo-core-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('makePlan').onclick=()=>{const idea=$('idea').value.trim();if(!idea){alert('اكتب فكرة التطبيق أولاً');return}latestPlan='خطة بداية لمشروع: '+idea+'\n\n1. تحديد المستخدمين والمشكلة التي يحلها التطبيق.\n2. تحديد أهم ثلاث ميزات للنسخة الأولى.\n3. رسم الشاشات ومسار الاستخدام.\n4. بناء واجهة أولية وتجربتها على الهاتف.\n5. إضافة قاعدة بيانات وتسجيل دخول آمن عند الحاجة.\n6. اختبار الوظائف وإصلاح الأخطاء قبل النشر.\n\nملاحظة: هذه خطة تنظيمية أولية وليست تنفيذاً تلقائياً للكود.';$('plan').textContent=latestPlan};
+$('copyPlan').onclick=async()=>{if(!latestPlan){alert('أنشئ الخطة أولاً');return}try{await navigator.clipboard.writeText(latestPlan);alert('تم نسخ الخطة')}catch(e){alert('تعذر النسخ من المتصفح؛ يمكنك تحديد النص ونسخه') }};
+render();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body></html>

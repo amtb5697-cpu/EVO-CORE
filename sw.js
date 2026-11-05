@@ -1,5 +1,5 @@
-const CACHE = 'evo-core-v2';
-const APP_FILES = ['./', './index.html', './manifest.json'];
+const CACHE = 'evo-core-v3';
+const APP_FILES = ['./', './index.html', './manifest.json', './ai-core.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
